@@ -27,7 +27,6 @@ const Player = () => {
 
   useEffect(() => {
     if (ignorePathnames.includes(pathname)) return
-    if (!selectedUrl) return
     getHistory().then(({ history, file }) => {
       setFile(file._id)
       setSelected(file.name)
