@@ -10,6 +10,16 @@ const nextConfig = (phase: string): NextConfig => {
       // exclude: ['error'],
       // },
     },
+    turbopack: {
+      root: __dirname,
+    },
+    reactStrictMode: false,
+    env: {
+      PUBLIC_API_URL: 'https://abook.nikelroot.ru',
+    },
+    typescript: { ignoreBuildErrors: true },
+    output: 'standalone',
+    productionBrowserSourceMaps: false,
     async rewrites() {
       if (!isDev) return []
       return [
