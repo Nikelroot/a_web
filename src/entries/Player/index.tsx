@@ -11,7 +11,6 @@ const Player = () => {
 
   const timeUpdateHandler = (e) => {
     const time = ref.current.currentTime
-    console.log('time', time)
     localStorage.setItem('time', time)
   }
 
@@ -27,7 +26,7 @@ const Player = () => {
         ref={ref}
         onTimeUpdate={timeUpdateHandler}
         controls={true}
-        autoPlay={false}
+        autoPlay={true}
         src="https://cdn.nikelroot.ru/cdn/stream/p1.m4b"
       />
     </PlayerStyled>

@@ -15,10 +15,10 @@ export const GlobalStyles = createGlobalStyle`
     justify-content: space-between;
     flex: 1 auto;
     font-family: var(--font-inter);
+    color: #212121;
   }
  #wrap {
    background: #305DDD;
-   color: #fff;
    flex: 1 auto;
    width: 100%;
    overflow: hidden;
@@ -28,7 +28,18 @@ export const GlobalStyles = createGlobalStyle`
  
  @media (min-width:1024px) {
    #wrap {
-     background: red;
+     display: flex;
+     justify-content: space-between;
+     gap: 5px;
+     padding: 5px;
+     
+     .content {
+       flex: 1 auto;
+       background: #fff;
+       border-radius: 2px;
+       padding: 10px;
+     }
+     
    }
  }
 `
