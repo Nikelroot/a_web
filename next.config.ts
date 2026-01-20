@@ -13,6 +13,7 @@ const nextConfig = (phase: string): NextConfig => {
     // turbopack: {
     //   root: __dirname,
     // },
+
     reactStrictMode: false,
     env: {
       PUBLIC_API_URL: 'https://abook.nikelroot.ru',
@@ -25,7 +26,7 @@ const nextConfig = (phase: string): NextConfig => {
       return [
         {
           source: '/api/:path*',
-          destination: 'http://localhost:3001/:path*',
+          destination: 'https://abook.nikelroot.ru/api/:path*',
         },
       ]
     },

@@ -2,16 +2,22 @@
 import { PlayerStyled } from '@/entries/Player/styles'
 import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/dist/client/components/navigation'
+import { observer } from 'mobx-react'
+import UserStore from '@/store/UserStore'
+import apiService from '@/services/apiService'
 
 const ignorePathnames = ['/login']
 
 const Player = () => {
   const ref = useRef<HTMLAudioElement>(null)
   const pathname = usePathname()
+  const { selectedUrl, updateTime, setFile, setSelected } = UserStore
+  const { getHistory } = apiService
 
   const timeUpdateHandler = (e) => {
     const time = ref.current.currentTime
     localStorage.setItem('time', time)
+    updateTime(time)
   }
 
   useEffect(() => {
@@ -19,17 +25,29 @@ const Player = () => {
     ref.current.currentTime = localStorage.getItem('time') || 0
   }, [])
 
+  useEffect(() => {
+    getHistory().then(({ history, file }) => {
+      setFile(file._id)
+      setSelected(file.name)
+      setTimeout(() => {
+        ref.current.currentTime = history.time
+      }, 1000)
+    })
+  }, [])
+
   if (ignorePathnames.includes(pathname)) return
+  if (!selectedUrl) return
+
   return (
     <PlayerStyled>
       <audio
         ref={ref}
         onTimeUpdate={timeUpdateHandler}
         controls={true}
-        autoPlay={true}
-        src="https://cdn.nikelroot.ru/cdn/stream/p1.m4b"
+        autoPlay={false}
+        src={selectedUrl}
       />
     </PlayerStyled>
   )
 }
-export default Player
+export default observer(Player)

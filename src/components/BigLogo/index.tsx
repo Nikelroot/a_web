@@ -7,7 +7,6 @@ const BigLogo = () => {
       <span className={'service'}>
         <span>a</span>book
       </span>
-      <span className={'domain'}>Nikelroot</span>
     </BigLogoStyled>
   )
 }

@@ -5,4 +5,5 @@ export interface Forum {
   date: string
   cat: string
   hasProblem: boolean
+  inLibrary?: boolean
 }

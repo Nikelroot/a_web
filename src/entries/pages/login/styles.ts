@@ -6,5 +6,12 @@ export const LoginPageStyled = styled.div`
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
+
+  .copyright {
+    margin-top: auto;
+    opacity: 0.1;
+    width: 100%;
+    text-align: center;
+  }
 `

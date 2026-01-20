@@ -5,7 +5,12 @@ import Cookies from 'universal-cookie'
 import { Action } from '@/types/Action'
 
 export type GetRoomsParams = {
-  search: string
+  search: string | null
+}
+
+export type AuthData = {
+  username?: string
+  password?: string
 }
 
 const instance: AxiosInstance = axios.create({
@@ -57,11 +62,32 @@ class ApiService {
   constructor() {}
 
   searchBooks = async (params: GetRoomsParams) => {
+    if (!params.search) return
     return instance.post('/forum/search', params).then(convertData)
   }
 
+  loadBooks = async () => {
+    return instance.get('/books').then(convertData)
+  }
+
+  updateTime = async (params) => {
+    return instance.put('/user/history', params).then(convertData)
+  }
+
+  getHistory = async () => {
+    return instance.get('/user/history').then(convertData)
+  }
+
   addToLibrary = async (params: { action: Action; payload: Record<string, any> }) => {
-    return instance.post('/actions/book', params).then(convertData)
+    return instance.post('/action/book', params).then(convertData)
+  }
+
+  login = async (params: AuthData) => {
+    return instance.post('/auth/login', params).then(convertData)
+  }
+
+  register = async (params: AuthData) => {
+    return instance.post('/auth/register', params).then(convertData)
   }
 }
 
