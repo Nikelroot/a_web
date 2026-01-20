@@ -10,7 +10,6 @@ const nextConfig = (phase: string): NextConfig => {
       // exclude: ['error'],
       // },
     },
-
     async rewrites() {
       if (!isDev) return []
       return [
