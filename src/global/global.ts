@@ -16,6 +16,7 @@ export const GlobalStyles = createGlobalStyle`
     flex: 1 auto;
     font-family: var(--font-inter);
     color: #212121;
+    background: #305ddd;
   }
   
   #wrap {
@@ -30,7 +31,7 @@ export const GlobalStyles = createGlobalStyle`
     justify-content: space-between;
     padding: 5px;
     max-height: 100vh;
-    overflow-y: hidden;
+    overflow: hidden;
   }
 `
 
@@ -38,6 +39,7 @@ export const Wrap = styled.div`
   width: 100%;
   display: flex;
   justify-content: flex-start;
+  padding-bottom: 54px;
   ${(props) =>
     props.$type !== 'login' &&
     css`

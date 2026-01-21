@@ -61,7 +61,12 @@ export function useThrottledUpdateTime(wait = 3000) {
     [mutate, wait],
   )
 
-  useEffect(() => () => throttled.cancel(), [throttled])
+  useEffect(
+    () => () => {
+      return throttled?.cancel && throttled!.cancel()
+    },
+    [throttled],
+  )
 
   return throttled // есть .flush() и .cancel()
 }

@@ -8,7 +8,7 @@ import apiService from '@/services/apiService'
 import { Button, Flex, Slider, SliderSingleProps } from 'antd'
 import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons'
 import { timeConvert } from '@/utils/timeConverter'
-import { useHistoryQuery, useThrottledUpdateTime } from '@/services/queries'
+import { useThrottledUpdateTime } from '@/services/queries'
 
 const ignorePathnames = ['/login']
 
@@ -23,6 +23,8 @@ const Player = () => {
   const [currentTime, setTime] = useState(0)
   const [status, setStatus] = useState(false)
   const update = useThrottledUpdateTime(5000)
+  const [loaded, setLoaded] = useState(false)
+  const [autoStarter, setAutostart] = useState(false)
 
   const timeUpdateHandler = useCallback(() => {
     const el = ref?.current
@@ -46,16 +48,8 @@ const Player = () => {
     getHistory().then(({ history, file }) => {
       setFile(file._id)
       setSelected(file.name)
-      setTimeout(() => {
-        ref.current.currentTime = history.time
-        setTime(history.time)
-      }, 2000)
+      setTime(history.time)
     })
-  }, [])
-
-  useEffect(() => {
-    if (ignorePathnames.includes(pathname)) return
-    loadHistory()
   }, [])
 
   const durationChangeHandler = useCallback(() => {
@@ -63,39 +57,16 @@ const Player = () => {
     setDuration(() => duration)
   })
 
-  useEffect(() => {
-    const handler = () => {
-      if (document.visibilityState === 'visible' && status === false) {
-        loadHistory()
-      }
-    }
-
-    document.addEventListener('visibilitychange', handler)
-
-    return () => {
-      document.removeEventListener('visibilitychange', handler)
-    }
-  }, [status])
-
-  useEffect(() => {
-    if (ignorePathnames.includes(pathname)) return
-    getHistory({ fileId: file }).then(({ history }) => {
-      if (history) {
-        const { time } = history
-        console.log('file', time)
-        ref.current.currentTime = time
-        play()
-        setTime(time)
-      }
-    })
-  }, [file])
-
-  const play = useCallback(() => {
+  const play = useCallback(async () => {
     const el = ref?.current
     if (!el) return
     if (el.paused) {
-      el.play()
-      setStatus(true)
+      try {
+        await el.play()
+        setStatus(true)
+      } catch (err) {
+        console.log(err)
+      }
     }
   }, [])
 
@@ -137,6 +108,57 @@ const Player = () => {
     timeChanging.current = false
   }, [])
 
+  const loadingHandler = useCallback(() => {
+    console.log('loaded')
+    setLoaded(true)
+  }, [])
+
+  useEffect(() => {
+    if (ignorePathnames.includes(pathname)) return
+    loadHistory()
+  }, [])
+
+  useEffect(() => {
+    const handler = () => {
+      if (document.visibilityState === 'visible' && status === false) {
+        loadHistory()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handler)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handler)
+    }
+  }, [status])
+
+  useEffect(() => {
+    if (ignorePathnames.includes(pathname)) return
+    const el = ref?.current
+    if (!el) return
+    if (file) {
+      el.load()
+    }
+    getHistory({ fileId: file }).then(({ history }) => {
+      if (history) {
+        const { time } = history
+        // ref.current.currentTime = time
+        // play()
+        setTime(time)
+      }
+    })
+  }, [file])
+
+  useEffect(() => {
+    const el = ref?.current
+    if (!el) return
+    if (loaded && currentTime !== null && el.paused && !autoStarter) {
+      el.currentTime = currentTime
+      play()
+      setAutostart(true)
+    }
+  }, [loaded, autoStarter, currentTime])
+
   if (ignorePathnames.includes(pathname)) return
   if (!selectedUrl) return
   return (
@@ -145,6 +167,7 @@ const Player = () => {
         ref={ref}
         onTimeUpdate={timeUpdateHandler}
         onDurationChange={durationChangeHandler}
+        onLoadedData={loadingHandler}
         controls={true}
         autoPlay={false}
         src={selectedUrl}

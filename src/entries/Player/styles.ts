@@ -4,12 +4,14 @@ export const PlayerStyled = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
+  position: fixed;
   background: #fff;
   margin-top: 5px;
   padding: 10px;
   font-size: 16px;
   user-select: none;
   border-radius: 3px;
+  z-index: 1;
   * {
     user-select: none;
   }

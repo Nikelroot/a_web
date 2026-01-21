@@ -2,7 +2,6 @@ import { makeAutoObservable } from 'mobx'
 import apiService from '@/services/apiService'
 
 class UserStore {
-  selected = null
   selectedUrl = null
   file = null
 
@@ -15,6 +14,7 @@ class UserStore {
   }
 
   setFile = (id) => {
+    console.log('set file')
     this.file = id
   }
 

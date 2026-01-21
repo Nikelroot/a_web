@@ -26,7 +26,7 @@ const inter = Inter({
 })
 
 export const metadata = {
-  viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
+  viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no',
   appleWebApp: {
     statusBarStyle: 'black-translucent',
   },
