@@ -11,8 +11,7 @@ const Aside = () => {
   }
   return (
     <AsideStyled>
-      <NavLink href={'/'}>Домой</NavLink>
-      <NavLink href={'/books'}>Мои книги</NavLink>
+      <NavLink href={'/'}>Мои книги</NavLink>
       <NavLink href={'/library'}>Библиотека</NavLink>
     </AsideStyled>
   )
