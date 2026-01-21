@@ -42,6 +42,7 @@ const Player = () => {
   }, [file])
 
   const loadHistory = useCallback(() => {
+    if (ignorePathnames.includes(pathname)) return
     getHistory().then(({ history, file }) => {
       setFile(file._id)
       setSelected(file.name)
@@ -77,6 +78,7 @@ const Player = () => {
   }, [status])
 
   useEffect(() => {
+    if (ignorePathnames.includes(pathname)) return
     getHistory({ fileId: file }).then(({ history }) => {
       if (history) {
         const { time } = history
