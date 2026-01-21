@@ -74,11 +74,15 @@ class ApiService {
     return instance.put('/user/history', params).then(convertData)
   }
 
-  getHistory = async () => {
-    return instance.get('/user/history').then(convertData)
+  getHistory = async (params: { fileId?: string }) => {
+    return instance.get('/user/history', { params }).then(convertData)
   }
 
   addToLibrary = async (params: { action: Action; payload: Record<string, any> }) => {
+    return instance.post('/action/book', params).then(convertData)
+  }
+
+  removeFromLibrary = async (params: { action: Action; payload: Record<string, any> }) => {
     return instance.post('/action/book', params).then(convertData)
   }
 

@@ -1,16 +1,20 @@
 import UserStore from '@/store/UserStore'
+import { FileStyled } from '@/entries/Books/styles'
 
 const File = (props) => {
-  const { setSelected, setFile } = UserStore
+  const { setSelected, setFile, file } = UserStore
   const name = props.name.split('/')
   name.shift()
 
   const clickHandler = () => {
-    console.log('click handler', props.name)
     setSelected(props.name)
     setFile(props._id)
   }
 
-  return <div onClick={clickHandler}>{name}</div>
+  return (
+    <FileStyled onClick={clickHandler} className={file === props._id ? 'active' : ''}>
+      {name}
+    </FileStyled>
+  )
 }
 export default File

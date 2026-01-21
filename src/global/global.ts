@@ -29,6 +29,8 @@ export const GlobalStyles = createGlobalStyle`
     flex-direction: column;
     justify-content: space-between;
     padding: 5px;
+    max-height: 100vh;
+    overflow-y: hidden;
   }
 `
 
@@ -42,11 +44,16 @@ export const Wrap = styled.div`
       justify-content: space-between;
       flex: 1 auto;
       gap: 5px;
+      max-height: 100%;
+      overflow: hidden;
+
       .content {
         flex: 1 auto;
         background: #fff;
         border-radius: 2px;
         padding: 10px;
+        max-height: 100%;
+        overflow-y: auto;
       }
     `};
 
@@ -69,4 +76,8 @@ export const Wrap = styled.div`
   //  gap: 5px;
   //  padding: 5px;
   //}
+
+  @media (max-width: 550px) {
+    flex-direction: column;
+  }
 `
