@@ -5,10 +5,11 @@ import { usePathname } from 'next/dist/client/components/navigation'
 import { observer } from 'mobx-react'
 import UserStore from '@/store/UserStore'
 import apiService from '@/services/apiService'
-import { Button, Flex, Slider, SliderSingleProps } from 'antd'
+import { Flex, Slider, SliderSingleProps } from 'antd'
 import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons'
 import { timeConvert } from '@/utils/timeConverter'
 import { useThrottledUpdateTime } from '@/services/queries'
+import Button from '@/shared/Button'
 
 const ignorePathnames = ['/login']
 
