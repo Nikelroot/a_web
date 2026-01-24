@@ -79,10 +79,14 @@ const Player = () => {
 
   const loadHistory = useCallback((fileId) => {
     if (ignorePathnames.includes(pathname)) return
-    playHistory({ fileId }).then(({ history = {}, file }) => {
-      setFile(file)
-      setSelected(file.name)
-      history?.time && setTime(history.time)
+    playHistory({ fileId }).then(({ history, file }) => {
+      if (file) {
+        setFile(file)
+        setSelected(file?.name)
+      }
+      if (history && history.time) {
+        setTime(history.time)
+      }
     })
   }, [])
 
@@ -162,7 +166,6 @@ const Player = () => {
   }, [status])
 
   useEffect(() => {
-    console.log('ef file', file, loaded)
     if (ignorePathnames.includes(pathname)) return
     const el = ref?.current
     if (!el) return
@@ -175,7 +178,6 @@ const Player = () => {
         // ref.current.currentTime = time
         // play()
         setTime(time)
-        console.log('history time', time)
       }
     })
   }, [loaded, file])
@@ -205,7 +207,7 @@ const Player = () => {
   }, [])
 
   const addBookMark = useCallback(() => {
-    console.log('addBookMark')
+    // console.log('addBookMark')
   }, [])
 
   if (ignorePathnames.includes(pathname)) return

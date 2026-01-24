@@ -20,7 +20,6 @@ class UserStore {
   }
 
   setFile = (id) => {
-    console.log('setFile', id)
     this.file = id
   }
 
@@ -33,7 +32,6 @@ class UserStore {
   }
 
   setDuration = (duration) => {
-    console.log('setDuration', duration)
     this.duration = duration
   }
   setTime = (currentTime) => {
