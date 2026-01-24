@@ -3,8 +3,12 @@ import { FileStyled } from '@/entries/Books/styles'
 
 const File = (props) => {
   const { setSelected, setFile, file } = UserStore
-  const name = props.name.split('/')
-  name.shift()
+  let name = props.name.split('/')
+  if (name.length <= 1) {
+    name = name.join('/')
+  } else {
+    name.shift()
+  }
 
   const clickHandler = () => {
     setSelected(props.name)

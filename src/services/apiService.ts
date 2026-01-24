@@ -74,7 +74,14 @@ class ApiService {
     return instance.put('/user/history', params).then(convertData)
   }
 
-  getHistory = async (params: { fileId?: string }) => {
+  getLastPlayedFile = async (): Promise<{
+    file: Record<string, never>
+    history: Record<string, never>
+  }> => {
+    return instance.get('/user/history/last').then(convertData)
+  }
+
+  playHistory = async (params: { fileId: string }) => {
     return instance.get('/user/history', { params }).then(convertData)
   }
 

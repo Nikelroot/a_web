@@ -1,15 +1,24 @@
 'use client'
+
 import { PlayerStyled } from '@/entries/Player/styles'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/dist/client/components/navigation'
 import { observer } from 'mobx-react'
 import UserStore from '@/store/UserStore'
 import apiService from '@/services/apiService'
-import { Flex, Slider, SliderSingleProps } from 'antd'
-import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons'
+import { SliderSingleProps } from 'antd'
+import {
+  BookOutlined,
+  FastBackwardOutlined,
+  FastForwardOutlined,
+  PauseCircleOutlined,
+  PlayCircleOutlined,
+} from '@ant-design/icons'
 import { timeConvert } from '@/utils/timeConverter'
 import { useThrottledUpdateTime } from '@/services/queries'
 import Button from '@/shared/Button'
+import Slider from '@/shared/Slider'
+import SeekSlider from '@/entries/Player/SeekLider'
 
 const ignorePathnames = ['/login']
 
@@ -18,14 +27,25 @@ const Player = () => {
   const buttonRef = useRef<HTMLButtonElement>(null)
   const timeChanging = useRef(false)
   const pathname = usePathname()
-  const { selectedUrl, file, setFile, setSelected } = UserStore
-  const { getHistory } = apiService
-  const [duration, setDuration] = useState(0)
-  const [currentTime, setTime] = useState(0)
-  const [status, setStatus] = useState(false)
+  const {
+    selectedUrl,
+    file,
+    setFile,
+    setSelected,
+    duration,
+    currentTime,
+    status,
+    loaded,
+    autoStarter,
+
+    setDuration,
+    setTime,
+    setStatus,
+    setLoaded,
+    setAutostart,
+  } = UserStore
+  const { getLastPlayedFile, playHistory } = apiService
   const update = useThrottledUpdateTime(5000)
-  const [loaded, setLoaded] = useState(false)
-  const [autoStarter, setAutostart] = useState(false)
 
   const timeUpdateHandler = useCallback(() => {
     const el = ref?.current
@@ -44,18 +64,31 @@ const Player = () => {
     }
   }, [file])
 
-  const loadHistory = useCallback(() => {
+  const loadLast = useCallback(() => {
     if (ignorePathnames.includes(pathname)) return
-    getHistory().then(({ history, file }) => {
-      setFile(file._id)
+    getLastPlayedFile().then(({ history, file }) => {
+      if (file) {
+        setFile(file._id)
+        setSelected(file.name)
+      }
+      if (history && history.time) {
+        setTime(history.time)
+      }
+    })
+  }, [])
+
+  const loadHistory = useCallback((fileId) => {
+    if (ignorePathnames.includes(pathname)) return
+    playHistory({ fileId }).then(({ history = {}, file }) => {
+      setFile(file)
       setSelected(file.name)
-      setTime(history.time)
+      history?.time && setTime(history.time)
     })
   }, [])
 
   const durationChangeHandler = useCallback(() => {
     const duration = ref.current.duration
-    setDuration(() => duration)
+    setDuration(duration)
   })
 
   const play = useCallback(async () => {
@@ -92,10 +125,6 @@ const Player = () => {
     el.blur()
   }, [status])
 
-  const formatter: NonNullable<SliderSingleProps['tooltip']>['formatter'] = (value) => {
-    return timeConvert(value)
-  }
-
   const timeChangeHandler = useCallback((e: number) => {
     timeChanging.current = true
     setTime(Number(e))
@@ -110,13 +139,12 @@ const Player = () => {
   }, [])
 
   const loadingHandler = useCallback(() => {
-    console.log('loaded')
     setLoaded(true)
   }, [])
 
   useEffect(() => {
     if (ignorePathnames.includes(pathname)) return
-    loadHistory()
+    loadLast()
   }, [])
 
   useEffect(() => {
@@ -134,21 +162,23 @@ const Player = () => {
   }, [status])
 
   useEffect(() => {
+    console.log('ef file', file, loaded)
     if (ignorePathnames.includes(pathname)) return
     const el = ref?.current
     if (!el) return
     if (file) {
       el.load()
     }
-    getHistory({ fileId: file }).then(({ history }) => {
+    playHistory({ fileId: file }).then(({ history }) => {
       if (history) {
         const { time } = history
         // ref.current.currentTime = time
         // play()
         setTime(time)
+        console.log('history time', time)
       }
     })
-  }, [file])
+  }, [loaded, file])
 
   useEffect(() => {
     const el = ref?.current
@@ -158,12 +188,30 @@ const Player = () => {
       play()
       setAutostart(true)
     }
-  }, [loaded, autoStarter, currentTime])
+  }, [file, loaded, autoStarter, currentTime])
+
+  const fastSeek = useCallback((time) => {
+    const el = ref?.current
+    if (!el) return
+
+    el.currentTime = el.currentTime + time
+  }, [])
+
+  const isStandalone = useMemo(() => {
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true
+    )
+  }, [])
+
+  const addBookMark = useCallback(() => {
+    console.log('addBookMark')
+  }, [])
 
   if (ignorePathnames.includes(pathname)) return
   if (!selectedUrl) return
   return (
-    <PlayerStyled>
+    <PlayerStyled $isStandalone={isStandalone}>
       <audio
         ref={ref}
         onTimeUpdate={timeUpdateHandler}
@@ -173,28 +221,39 @@ const Player = () => {
         autoPlay={false}
         src={selectedUrl}
       />
-      <Flex align={'center'} gap={'10px'}>
+      <div className={'controls'}>
         <Button
           ref={buttonRef}
           size={'middle'}
+          icon={<FastBackwardOutlined />}
+          onClick={() => fastSeek(-15)}
+        />
+        <Button
+          ref={buttonRef}
+          size={'large'}
           icon={status ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
           onClick={togglePlay}
         />
-
-        <div className="slider">
-          <Slider
-            max={duration}
-            value={currentTime}
-            tooltip={{ formatter }}
-            onChange={timeChangeHandler}
-            onChangeComplete={timeChangeCompeleHandler}
-          />
-        </div>
-        <div className="time">
-          <span>{timeConvert(currentTime)}</span> <span className={'small'}>/</span>{' '}
-          <span>{timeConvert(duration)}</span>
-        </div>
-      </Flex>
+        <Button
+          ref={buttonRef}
+          size={'middle'}
+          icon={<FastForwardOutlined />}
+          onClick={() => fastSeek(15)}
+        />
+      </div>
+      <SeekSlider
+        duration={duration}
+        currentTime={currentTime}
+        timeChangeHandler={timeChangeHandler}
+        timeChangeCompeleHandler={timeChangeCompeleHandler}
+      />
+      <div className="full" />
+      <div className="marks">
+        <Button ref={buttonRef} size={'middle'} icon={<BookOutlined />} onClick={addBookMark} />
+      </div>
+      <div className="time">
+        {timeConvert(currentTime)} / {timeConvert(duration)}
+      </div>
     </PlayerStyled>
   )
 }

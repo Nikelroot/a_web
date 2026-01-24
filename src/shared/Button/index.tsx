@@ -1,15 +1,20 @@
 'use client'
 
 import { Button as AntButton } from 'antd'
-import { useRef } from 'react'
+import React, { ComponentProps, useRef } from 'react'
 
-const Button = (props) => {
+type ButtonProps = ComponentProps<typeof AntButton>
+
+const Button = (props: ButtonProps) => {
   const { onClick, ...otherProps } = props
-  const ref = useRef<HTMLButtonElement>(null)
-  const onClickHandler = (e) => {
-    ref.current && ref.current.blur()
-    onClick(e)
+  const ref = useRef<HTMLButtonElement | null>(null)
+  const onClickHandler: ButtonProps['onClick'] = (e) => {
+    const el = ref?.current
+    onClick?.(e)
+
+    if (!el) return
+    el.blur()
   }
-  return <AntButton onClick={onClickHandler} {...otherProps} />
+  return <AntButton ref={ref} onClick={onClickHandler} {...otherProps} />
 }
 export default Button

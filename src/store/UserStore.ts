@@ -5,6 +5,12 @@ class UserStore {
   selectedUrl = null
   file = null
 
+  duration = 0
+  currentTime: number = 0
+  status: boolean = false
+  loaded: boolean = false
+  autoStarter: boolean = false
+
   constructor() {
     makeAutoObservable(this)
   }
@@ -14,7 +20,7 @@ class UserStore {
   }
 
   setFile = (id) => {
-    console.log('set file')
+    console.log('setFile', id)
     this.file = id
   }
 
@@ -24,6 +30,23 @@ class UserStore {
       fileId: this.file,
       time,
     })
+  }
+
+  setDuration = (duration) => {
+    console.log('setDuration', duration)
+    this.duration = duration
+  }
+  setTime = (currentTime) => {
+    this.currentTime = currentTime
+  }
+  setStatus = (status) => {
+    this.status = status
+  }
+  setLoaded = (loaded) => {
+    this.loaded = loaded
+  }
+  setAutostart = (autoStarter) => {
+    this.autoStarter = autoStarter
   }
 }
 const Store = new UserStore()

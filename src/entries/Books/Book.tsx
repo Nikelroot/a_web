@@ -9,7 +9,7 @@ import { DeleteOutlined } from '@ant-design/icons'
 import LibraryStore from '@/store/LibraryStore'
 
 const Book = (props) => {
-  const { files, progress, _id } = props
+  const { files = [], progress = 0, _id } = props
   const { file } = UserStore
   const { loadBooks } = LibraryStore
   const { removeFromLibrary } = apiService
