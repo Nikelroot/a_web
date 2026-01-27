@@ -60,6 +60,6 @@ export default class UserDataStore {
     this.root.playerStore.setFile(file._id)
     this.root.playerStore.setSelected(file.name)
     this.root.playerStore.setTime(history?.time || 0)
-    this.root.playerStore.audioRef.currentTime = history?.time || 0
+    this.root.playerStore.setLocalTime(history?.time || 0)
   }
 }

@@ -35,9 +35,12 @@ const Player = () => {
 
     setDuration,
     setTime,
-    setStatus,
     setLoaded,
     setAudio,
+
+    togglePlay,
+    play,
+    pause,
   } = playerStore
   const update = useThrottledUpdateTime(5000)
 
@@ -62,40 +65,6 @@ const Player = () => {
     const duration = ref.current.duration
     setDuration(duration)
   }, [])
-
-  const play = useCallback(async () => {
-    const el = ref?.current
-    if (!el) return
-    if (el.paused) {
-      try {
-        await el.play()
-        setStatus(true)
-      } catch (err) {
-        console.log(err)
-      }
-    }
-  }, [])
-
-  const pause = useCallback(() => {
-    const el = ref?.current
-    if (!el) return
-
-    el.pause()
-    setStatus(false)
-  }, [])
-
-  const togglePlay = useCallback(() => {
-    if (status) {
-      pause()
-    } else {
-      play()
-    }
-
-    const el = buttonRef?.current
-    if (!el) return
-
-    el.blur()
-  }, [status])
 
   const timeChangeHandler = useCallback((e: number) => {
     timeChanging.current = true

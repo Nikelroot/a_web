@@ -12,7 +12,6 @@ export default class PlayerStore {
   currentTime = 0
   status = false
   loaded = false
-  autoStarter = false
 
   constructor(
     private root: RootStore,
@@ -35,30 +34,68 @@ export default class PlayerStore {
   setTime = (time: number) => {
     this.currentTime = time
   }
+  setLocalTime = (time = 0) => {
+    const el = this.audioRef
+    if (!el) return
+    el.currentTime = time
+  }
   setStatus = (st: boolean) => {
     this.status = st
   }
   setLoaded = (loaded: boolean) => {
     this.loaded = loaded
   }
-  setAutostart = (st: boolean) => {
-    this.autoStarter = st
-  }
-
   changeBook = async (fileProps: { _id: string; name: string }) => {
+    const { playHistory } = this.api
+
     this.loaded = false
     this.setStatus(false)
-    const { playHistory } = this.api
+
     this.file = fileProps._id
     this.setSelected(fileProps.name)
     const { history } = (await playHistory({ fileId: fileProps._id })) || {}
     this.setTime(history?.time || 0)
-    this.audioRef.currentTime = history?.time || 0
-    await this.audioRef.play()
+    this.setLocalTime(history?.time || 0)
+    this.play()
   }
 
   setAudio = (el: HTMLAudioElement) => {
     if (!el) return
     this.audioRef = el
+  }
+
+  play = async () => {
+    const el = this.audioRef
+    if (!el) return
+
+    if (el.paused) {
+      try {
+        await el.play()
+        this.status = true
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  }
+  pause = () => {
+    const el = this.audioRef
+    if (!el) return
+
+    el.pause()
+    this.setStatus(false)
+  }
+
+  togglePlay = () => {
+    const el = this.audioRef
+    if (!el) return
+    const status = !el.paused
+
+    if (status) {
+      this.pause()
+    } else {
+      this.play()
+    }
+
+    el.blur()
   }
 }
