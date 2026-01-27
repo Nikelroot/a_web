@@ -6,7 +6,7 @@ export default class PlayerStore {
   audioRef: HTMLAudioElement | null = null
 
   file: string | null = null
-  selectedUrl: string | null = null
+  selectedUrl: string | undefined = undefined
 
   duration = 0
   currentTime = 0

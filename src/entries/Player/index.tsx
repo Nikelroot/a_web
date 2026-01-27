@@ -133,7 +133,7 @@ const Player = () => {
         onLoadedData={loadingHandler}
         controls={true}
         autoPlay={false}
-        src={selectedUrl || ''}
+        src={selectedUrl}
       />
       <div className={'controls'}>
         <Button
