@@ -82,4 +82,15 @@ export const PlayerStyled = styled.div<{
     min-width: 30px;
     min-height: 30px;
   }
+
+  .ant-slider-mark {
+    top: -18px;
+    display: none;
+  }
+
+  &:hover {
+    .ant-slider-mark {
+      display: block;
+    }
+  }
 `
