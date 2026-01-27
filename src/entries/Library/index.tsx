@@ -3,19 +3,19 @@
 import { Flex, Input } from 'antd'
 import { LibraryStyled } from '@/entries/Library/styles'
 import { ChangeEvent, useCallback, useState } from 'react'
-import LibraryStore from '@/store/LibraryStore'
 import { observer } from 'mobx-react'
 import LibraryList from '@/entries/Library/LibraryList'
+import { useStore } from '@/store/root.context'
 
 const Library = (props: { className?: string }) => {
-  const { searchTorrents } = LibraryStore
+  const { libraryStore } = useStore()
   const [value, setValue] = useState('')
 
   const changeHandler = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value
 
     setValue(v)
-    searchTorrents(v)
+    libraryStore.searchTorrents(v)
   }, [])
 
   return (
