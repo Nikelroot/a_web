@@ -5,10 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
-    "format": "prettier --write ."
+    "start": "next start"
   },
   "dependencies": {
     "@tanstack/pacer": "^0.17.3",
