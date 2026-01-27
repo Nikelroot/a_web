@@ -1,4 +1,4 @@
-export const timeConvert = (seconds: number) => {
+export const timeConvert = (seconds: number | undefined) => {
   // @ts-ignore
   seconds = parseInt(seconds)
   const hours = Math.floor(seconds / 3600)

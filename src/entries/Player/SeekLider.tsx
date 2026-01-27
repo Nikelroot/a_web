@@ -1,11 +1,15 @@
 import Slider from '@/shared/Slider'
 import { SliderSingleProps } from 'antd'
 import { timeConvert } from '@/utils/timeConverter'
-import { observer } from 'mobx-react'
-import { useStore } from '@/store/root.context'
 
-const SeekSlider = ({ duration, currentTime, timeChangeHandler, timeChangeCompeleHandler }) => {
-  const { playerStore } = useStore()
+interface Props {
+  duration: number
+  currentTime: number
+  timeChangeHandler: (time: number) => void
+  timeChangeCompileHandler: (time: number) => void
+}
+const SeekSlider = (props: Props) => {
+  const { duration, currentTime, timeChangeHandler, timeChangeCompileHandler } = props
 
   const formatter: NonNullable<SliderSingleProps['tooltip']>['formatter'] = (value) => {
     return timeConvert(value)
@@ -17,9 +21,9 @@ const SeekSlider = ({ duration, currentTime, timeChangeHandler, timeChangeCompel
         value={currentTime}
         tooltip={{ formatter }}
         onChange={timeChangeHandler}
-        onChangeComplete={timeChangeCompeleHandler}
+        onChangeComplete={timeChangeCompileHandler}
       />
     </div>
   )
 }
-export default observer(SeekSlider)
+export default SeekSlider

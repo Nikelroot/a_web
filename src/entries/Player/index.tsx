@@ -1,8 +1,8 @@
 'use client'
 
 import { PlayerStyled } from '@/entries/Player/styles'
-import { useCallback, useMemo, useRef } from 'react'
-import { usePathname } from 'next/dist/client/components/navigation'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { observer } from 'mobx-react'
 import {
   BookOutlined,
@@ -17,7 +17,8 @@ import Button from '@/shared/Button'
 import SeekSlider from '@/entries/Player/SeekLider'
 import { useStore } from '@/store/root.context'
 
-const ignorePathnames = ['/login']
+const ignorePathNames = ['/login']
+type IOSStandaloneNavigator = Navigator & { standalone?: boolean }
 
 const Player = () => {
   const { playerStore } = useStore()
@@ -27,7 +28,6 @@ const Player = () => {
   const pathname = usePathname()
   const {
     selectedUrl,
-    file,
     duration,
     currentTime,
     status,
@@ -40,8 +40,8 @@ const Player = () => {
 
     togglePlay,
     play,
-    pause,
   } = playerStore
+  const [isStandalone, setIsStandalone] = useState(false)
   const update = useThrottledUpdateTime(5000)
 
   const timeUpdateHandler = useCallback(() => {
@@ -49,75 +49,91 @@ const Player = () => {
     if (!el) return
 
     const time = el.currentTime || 0
-    if (timeChanging.current === false) {
-      setTime(time)
+    if (!timeChanging.current) {
+      playerStore.setTime(time)
 
       if (time > 0) {
         update({
-          fileId: file,
+          fileId: playerStore.file,
           time,
         })
       }
     }
-  }, [file])
+  }, [playerStore, update])
 
   const durationChangeHandler = useCallback(() => {
-    const duration = ref.current.duration
-    setDuration(duration)
-  }, [])
-
-  const timeChangeHandler = useCallback((e: number) => {
-    timeChanging.current = true
-    setTime(Number(e))
-  }, [])
-
-  const timeChangeCompeleHandler = useCallback((e) => {
     const el = ref?.current
     if (!el) return
-    el.currentTime = e
-    play()
-    timeUpdateHandler()
-    timeChanging.current = false
-  }, [])
+    const duration = el.duration
+    setDuration(duration)
+  }, [setDuration])
+
+  const timeChangeHandler = useCallback(
+    (e: number) => {
+      timeChanging.current = true
+      setTime(Number(e))
+    },
+    [setTime],
+  )
+
+  const timeChangeCompeleHandler = useCallback(
+    async (e: number) => {
+      const el = ref?.current
+      if (!el) return
+      // eslint-disable-next-line react-hooks/immutability
+      el.currentTime = e
+      await play()
+      timeUpdateHandler()
+      timeChanging.current = false
+    },
+    [play, timeUpdateHandler],
+  )
 
   const loadingHandler = useCallback(() => {
     setLoaded(true)
     durationChangeHandler()
-  }, [])
+  }, [setLoaded, durationChangeHandler])
 
-  const fastSeek = useCallback((time) => {
+  const fastSeek = (time: number) => {
     const el = ref?.current
     if (!el) return
 
+    // eslint-disable-next-line react-hooks/immutability
     el.currentTime = el.currentTime + time
-  }, [])
+  }
 
-  const isStandalone = useMemo(() => {
-    return (
-      window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as any).standalone === true
-    )
-  }, [])
-
-  const addBookMark = useCallback(() => {
+  const addBookMark = () => {
     // console.log('addBookMark')
+  }
+
+  useEffect(() => {
+    const calc = () =>
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as IOSStandaloneNavigator).standalone === true
+
+    setIsStandalone(calc())
+
+    const mql = window.matchMedia('(display-mode: standalone)')
+    const onChange = () => setIsStandalone(calc())
+    mql.addEventListener?.('change', onChange)
+    return () => mql.removeEventListener?.('change', onChange)
   }, [])
 
-  if (ignorePathnames.includes(pathname)) return
+  useEffect(() => {
+    if (ref.current) setAudio(ref.current)
+  }, [setAudio])
+
+  if (ignorePathNames.includes(pathname)) return null
   return (
     <PlayerStyled $isStandalone={isStandalone}>
       <audio
-        ref={(_ref) => {
-          if (!_ref) return
-          setAudio(_ref)
-          ref.current = _ref
-        }}
+        ref={ref}
         onTimeUpdate={timeUpdateHandler}
         onDurationChange={durationChangeHandler}
         onLoadedData={loadingHandler}
         controls={true}
         autoPlay={false}
-        src={selectedUrl}
+        src={selectedUrl || ''}
       />
       <div className={'controls'}>
         <Button
@@ -128,14 +144,12 @@ const Player = () => {
           disabled={!loaded}
         />
         <Button
-          ref={buttonRef}
           size={'large'}
           icon={status ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
           onClick={togglePlay}
           disabled={!loaded}
         />
         <Button
-          ref={buttonRef}
           size={'middle'}
           icon={<FastForwardOutlined />}
           onClick={() => fastSeek(15)}
@@ -146,11 +160,11 @@ const Player = () => {
         duration={duration}
         currentTime={currentTime}
         timeChangeHandler={timeChangeHandler}
-        timeChangeCompeleHandler={timeChangeCompeleHandler}
+        timeChangeCompileHandler={timeChangeCompeleHandler}
       />
       <div className="full" />
       <div className="marks">
-        <Button ref={buttonRef} size={'middle'} icon={<BookOutlined />} onClick={addBookMark} />
+        <Button size={'middle'} icon={<BookOutlined />} onClick={addBookMark} />
       </div>
       <div className="time">
         {timeConvert(currentTime)} / {timeConvert(duration)}
