@@ -116,20 +116,6 @@ const Player = () => {
     durationChangeHandler()
   }, [])
 
-  // useEffect(() => {
-  //   const handler = () => {
-  //     if (document.visibilityState === 'visible' && status === false) {
-  //       // loadHistory()
-  //     }
-  //   }
-  //
-  //   document.addEventListener('visibilitychange', handler)
-  //
-  //   return () => {
-  //     document.removeEventListener('visibilitychange', handler)
-  //   }
-  // }, [status])
-
   const fastSeek = useCallback((time) => {
     const el = ref?.current
     if (!el) return
