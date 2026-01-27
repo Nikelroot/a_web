@@ -1,5 +1,5 @@
 import { api } from './axios'
-import { Action } from '@/types/Action'
+import { TAction } from '@/types/TAction'
 
 export type GetRoomsParams = {
   search: string | null
@@ -31,7 +31,7 @@ export const updateTime = async (params: any) => {
   return data
 }
 
-export const addToLibrary = async (params: { action: Action; payload: Record<string, any> }) => {
+export const addToLibrary = async (params: { action: TAction; payload: Record<string, any> }) => {
   const { data } = await api.post('/action/book', params)
   return data
 }

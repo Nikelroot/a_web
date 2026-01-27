@@ -68,12 +68,16 @@ export default class PlayerStore {
     const el = this.audioRef
     if (!el) return
 
+    if (el.currentTime === 0 && this.currentTime !== 0) {
+      el.currentTime = this.currentTime
+    }
+
     if (el.paused) {
       try {
         await el.play()
         this.status = true
       } catch (err) {
-        console.log(err)
+        console.warn(err)
       }
     }
   }
@@ -88,12 +92,12 @@ export default class PlayerStore {
   togglePlay = () => {
     const el = this.audioRef
     if (!el) return
-    const status = !el.paused
+    const status = el.paused
 
     if (status) {
-      this.pause()
-    } else {
       this.play()
+    } else {
+      this.pause()
     }
 
     el.blur()

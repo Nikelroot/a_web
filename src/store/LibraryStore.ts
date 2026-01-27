@@ -1,10 +1,10 @@
 import { makeAutoObservable } from 'mobx'
-import { Forum } from '@/types/Forum'
+import { IForum } from '@/types/IForum'
 import apiService from '@/services/apiService'
 import RootStore from '@/store/RootStore'
 
 export default class LibraryStore {
-  items: Forum[] = []
+  items: IForum[] = []
   searchText: string | null = null
 
   constructor(
@@ -14,7 +14,7 @@ export default class LibraryStore {
     makeAutoObservable(this)
   }
 
-  setItems = (array: Forum[]) => {
+  setItems = (array: IForum[]) => {
     this.items = [...array]
   }
 

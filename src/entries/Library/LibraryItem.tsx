@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react'
 import { LibraryItemStyled } from '@/entries/Library/styles'
 import { Button } from 'antd'
-import { Forum } from '@/types/Forum'
+import { IForum } from '@/types/IForum'
 import { PlusOutlined } from '@ant-design/icons'
 import apiService from '@/services/apiService'
 import LibraryStore from '@/store/LibraryStore'
 
-const LibraryItem = (props: Forum) => {
+const LibraryItem = (props: IForum) => {
   const { title, _id, inLibrary } = props
   const { addToLibrary } = apiService
   const { loadTorrents } = LibraryStore

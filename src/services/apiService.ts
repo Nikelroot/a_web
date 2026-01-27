@@ -2,7 +2,10 @@
 
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
 import Cookies from 'universal-cookie'
-import { Action } from '@/types/Action'
+import { TAction } from '@/types/TAction'
+import { IForum } from '@/types/IForum'
+import { IFile } from '@/types/File'
+import { IHistory } from '@/types/History'
 
 export type GetRoomsParams = {
   search: string | null
@@ -61,35 +64,42 @@ function convertData<T>(resp: AxiosResponse<T>): T {
 class ApiService {
   constructor() {}
 
-  searchBooks = async (params: GetRoomsParams) => {
-    if (!params.search) return
+  searchBooks = async (
+    params: GetRoomsParams,
+  ): Promise<{ collection: IForum[]; count: number }> => {
     return instance.post('/forum/search', params).then(convertData)
   }
 
-  loadBooks = async () => {
+  loadBooks = async (): Promise<{ collection: IForum[]; count: number }> => {
     return instance.get('/books').then(convertData)
   }
 
-  updateTime = async (params) => {
+  updateTime = async (params: { fileId: string; time: number }): Promise<{ status: 'ok' }> => {
     return instance.put('/user/history', params).then(convertData)
   }
 
   getLastPlayedFile = async (): Promise<{
-    file: Record<string, never>
-    history: Record<string, never>
+    file: IFile
+    history: IHistory
   }> => {
     return instance.get('/user/history/last').then(convertData)
   }
 
-  playHistory = async (params: { fileId: string }) => {
+  playHistory = async (params: { fileId: string }): Promise<{ file: IFile; history: IHistory }> => {
     return instance.get('/user/history', { params }).then(convertData)
   }
 
-  addToLibrary = async (params: { action: Action; payload: Record<string, any> }) => {
+  addToLibrary = async (params: {
+    action: TAction
+    payload: Record<string, string | number | boolean>
+  }) => {
     return instance.post('/action/book', params).then(convertData)
   }
 
-  removeFromLibrary = async (params: { action: Action; payload: Record<string, any> }) => {
+  removeFromLibrary = async (params: {
+    action: TAction
+    payload: Record<string, string | number | boolean>
+  }) => {
     return instance.post('/action/book', params).then(convertData)
   }
 

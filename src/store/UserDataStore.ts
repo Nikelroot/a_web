@@ -1,9 +1,10 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import apiService from '@/services/apiService'
 import RootStore from '@/store/RootStore'
+import { IForum } from '@/types/IForum'
 
 export default class UserDataStore {
-  books = []
+  books: IForum[] = []
 
   isLoading: boolean = false
   removingIds = new Set<string>()
@@ -48,7 +49,7 @@ export default class UserDataStore {
   get getActiveBook() {
     return (
       this.books.find((book) => {
-        return book?.files?.some((f) => f._id === this.file)
+        return book?.files?.some((f) => f._id === this.root.playerStore.file)
       })?._id || null
     )
   }
