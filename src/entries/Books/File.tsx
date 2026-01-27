@@ -1,16 +1,13 @@
 import { FileStyled } from '@/entries/Books/styles'
 import { useStore } from '@/store/root.context'
+import { IFile } from '@/types/File'
 
-const File = (props) => {
+const File = (props: IFile) => {
   const { playerStore } = useStore()
   const { file, changeBook } = playerStore
 
-  let name = props.name.split('/')
-  if (name.length <= 1) {
-    name = name.join('/')
-  } else {
-    name.shift()
-  }
+  const lastPart = props.name.split('/')
+  const title = lastPart.at(-1) ?? ''
 
   const clickHandler = () => {
     changeBook(props)
@@ -18,7 +15,7 @@ const File = (props) => {
 
   return (
     <FileStyled onClick={clickHandler} className={file === props._id ? 'active' : ''}>
-      {name}
+      {title}
     </FileStyled>
   )
 }

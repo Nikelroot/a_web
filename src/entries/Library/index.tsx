@@ -9,14 +9,18 @@ import { useStore } from '@/store/root.context'
 
 const Library = (props: { className?: string }) => {
   const { libraryStore } = useStore()
+  const { searchTorrents } = libraryStore
   const [value, setValue] = useState('')
 
-  const changeHandler = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
-    const v = e.target.value
+  const changeHandler = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      const v = e.target.value
 
-    setValue(v)
-    libraryStore.searchTorrents(v)
-  }, [])
+      setValue(v)
+      await searchTorrents(v)
+    },
+    [searchTorrents],
+  )
 
   return (
     <LibraryStyled className={props?.className || ''}>
