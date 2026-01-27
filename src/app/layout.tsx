@@ -6,6 +6,7 @@ import { ConfigProvider } from 'antd'
 import { Metadata, Viewport } from 'next'
 import { ReactNode } from 'react'
 import PlayerZone from '@/layouts/PlayerZone'
+import { StoreProvider } from '@/store/root.context'
 
 const rethink = Rethink_Sans({
   subsets: ['latin'],
@@ -56,17 +57,19 @@ export default function RootLayout({
   return (
     <html lang="ru" className={`${rethink.variable} ${prata.variable} ${inter.variable}`}>
       <body>
-        <StyledComponentsRegistry>
-          <ReactQueryProvider>
-            <ConfigProvider theme={theme}>
-              <GlobalStyles />
-              <div id="wrap">
-                {children}
-                <PlayerZone />
-              </div>
-            </ConfigProvider>
-          </ReactQueryProvider>
-        </StyledComponentsRegistry>
+        <StoreProvider>
+          <StyledComponentsRegistry>
+            <ReactQueryProvider>
+              <ConfigProvider theme={theme}>
+                <GlobalStyles />
+                <div id="wrap">
+                  {children}
+                  <PlayerZone />
+                </div>
+              </ConfigProvider>
+            </ReactQueryProvider>
+          </StyledComponentsRegistry>
+        </StoreProvider>
       </body>
     </html>
   )

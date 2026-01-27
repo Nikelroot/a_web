@@ -1,13 +1,16 @@
 import { makeAutoObservable } from 'mobx'
 import { Forum } from '@/types/Forum'
 import apiService from '@/services/apiService'
+import RootStore from '@/store/RootStore'
 
-class LibraryStore {
+export default class LibraryStore {
   items: Forum[] = []
-  books = []
   searchText: string | null = null
 
-  constructor() {
+  constructor(
+    private root: RootStore,
+    private api: typeof apiService,
+  ) {
     makeAutoObservable(this)
   }
 
@@ -26,19 +29,9 @@ class LibraryStore {
   }
 
   loadTorrents = () => {
-    const { searchBooks } = apiService
+    const { searchBooks } = this.api
     searchBooks({ search: this.searchText }).then(({ collection }) => {
       this.setItems(collection)
     })
   }
-
-  loadBooks = () => {
-    const { loadBooks } = apiService
-
-    loadBooks().then(({ collection }) => {
-      this.books = collection
-    })
-  }
 }
-const Store = new LibraryStore()
-export default Store

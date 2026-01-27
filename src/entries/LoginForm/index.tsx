@@ -64,6 +64,7 @@ const LoginForm = () => {
           autoComplete="username"
           onChange={changeHandler}
           required
+          data-testid="username"
         />
       </div>
 
@@ -77,14 +78,27 @@ const LoginForm = () => {
           autoComplete="current-password"
           onChange={changeHandler}
           required
+          data-testid="password"
         />
       </div>
 
       <Flex gap={'5px'}>
-        <Button size={'small'} variant={'solid'} color={'default'} htmlType={'submit'}>
+        <Button
+          size={'small'}
+          variant={'solid'}
+          color={'default'}
+          htmlType={'submit'}
+          data-testid="login-btn"
+        >
           Вход
         </Button>
-        <Button size={'small'} variant={'solid'} color={'default'} onClick={registerShandler}>
+        <Button
+          size={'small'}
+          variant={'solid'}
+          color={'default'}
+          onClick={registerShandler}
+          data-testid="register-btn"
+        >
           Регистрация
         </Button>
       </Flex>

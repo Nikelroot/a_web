@@ -1,14 +1,15 @@
 'use client'
 import { BooksStyled } from '@/entries/Books/styles'
-import LibraryStore from '@/store/LibraryStore'
 import { useEffect } from 'react'
 import BooksList from '@/entries/Books/BooksList'
+import { useStore } from '@/store/root.context'
 
 const Books = () => {
-  const { loadBooks } = LibraryStore
+  const { userStore } = useStore()
 
   useEffect(() => {
-    loadBooks()
+    userStore.loadBooks()
+    userStore.loadLastHistory()
   }, [])
 
   return (
