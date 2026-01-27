@@ -6,6 +6,7 @@ import { TAction } from '@/types/TAction'
 import { IForum } from '@/types/IForum'
 import { IFile } from '@/types/File'
 import { IHistory } from '@/types/History'
+import { IBookMark } from '@/types/BookMark'
 
 export type GetRoomsParams = {
   search: string | null
@@ -109,6 +110,23 @@ class ApiService {
 
   register = async (params: AuthData) => {
     return instance.post('/auth/register', params).then(convertData)
+  }
+
+  addBookMark = async (params: {
+    fileId: string | undefined
+    time: number
+  }): Promise<{
+    bookMark: IBookMark
+  }> => {
+    return instance.post('/user/history/bookMark', params).then(convertData)
+  }
+
+  loadBookMarks = async (params: {
+    fileId: string | undefined
+  }): Promise<{
+    bookMarks: IBookMark[]
+  }> => {
+    return instance.get('/user/history/bookMark', { params }).then(convertData)
   }
 }
 

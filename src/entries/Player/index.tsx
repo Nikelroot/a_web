@@ -40,6 +40,8 @@ const Player = () => {
 
     togglePlay,
     play,
+    addBookMark,
+    loadBookMarks,
   } = playerStore
   const [isStandalone, setIsStandalone] = useState(false)
   const update = useThrottledUpdateTime(5000)
@@ -92,6 +94,7 @@ const Player = () => {
   const loadingHandler = useCallback(() => {
     setLoaded(true)
     durationChangeHandler()
+    loadBookMarks()
   }, [setLoaded, durationChangeHandler])
 
   const fastSeek = (time: number) => {
@@ -102,8 +105,8 @@ const Player = () => {
     el.currentTime = el.currentTime + time
   }
 
-  const addBookMark = () => {
-    // console.log('addBookMark')
+  const addBookMarkHandler = () => {
+    addBookMark()
   }
 
   useEffect(() => {
@@ -164,7 +167,7 @@ const Player = () => {
       />
       <div className="full" />
       <div className="marks">
-        <Button size={'middle'} icon={<BookOutlined />} onClick={addBookMark} />
+        <Button size={'middle'} icon={<BookOutlined />} onClick={addBookMarkHandler} />
       </div>
       <div className="time">
         {timeConvert(currentTime)} / {timeConvert(duration)}

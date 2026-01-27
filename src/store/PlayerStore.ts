@@ -1,17 +1,19 @@
 import { makeAutoObservable } from 'mobx'
 import RootStore from '@/store/RootStore'
 import apiService from '@/services/apiService'
+import { IBookMark } from '@/types/BookMark'
 
 export default class PlayerStore {
   audioRef: HTMLAudioElement | null = null
 
-  file: string | null = null
+  file: string | undefined = undefined
   selectedUrl: string | undefined = undefined
 
   duration = 0
   currentTime = 0
   status = false
   loaded = false
+  bookMarks: IBookMark[] = []
 
   constructor(
     private root: RootStore,
@@ -20,7 +22,7 @@ export default class PlayerStore {
     makeAutoObservable(this, {}, {})
   }
 
-  setFile = (id: string | null) => {
+  setFile = (id: string | undefined) => {
     this.file = id
   }
 
@@ -101,5 +103,21 @@ export default class PlayerStore {
     }
 
     el.blur()
+  }
+
+  addBookMark = async () => {
+    await this.api
+      .addBookMark({
+        fileId: this.file,
+        time: this.currentTime,
+      })
+      .then(this.loadBookMarks)
+  }
+
+  loadBookMarks = async () => {
+    const resp = await this.api.loadBookMarks({
+      fileId: this.file,
+    })
+    this.bookMarks = resp.bookMarks
   }
 }
