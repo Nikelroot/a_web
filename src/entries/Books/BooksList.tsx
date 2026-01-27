@@ -8,7 +8,7 @@ const BooksList = () => {
 
   return (
     <BooksListStyled>
-      {userStore.books.map((book) => {
+      {userStore?.books?.map((book) => {
         return <Book key={book._id} {...book} />
       })}
     </BooksListStyled>

@@ -3,16 +3,20 @@ import { LibraryItemStyled } from '@/entries/Library/styles'
 import { Button } from 'antd'
 import { IForum } from '@/types/IForum'
 import { PlusOutlined } from '@ant-design/icons'
-import { useStore } from '@/store/root.context'
 import { useCallback } from 'react'
+import { useAddToLibraryMutation } from '@/services/queries'
 
 const LibraryItem = (props: IForum) => {
   const { title, _id, inLibrary } = props
-  const { libraryStore } = useStore()
-  const { addToLibrary, loading } = libraryStore
+  const { mutate: addToLibrary, isPending } = useAddToLibraryMutation()
 
   const clickAction = useCallback(async () => {
-    await addToLibrary(_id)
+    addToLibrary({
+      action: 'ADD_TO_LIBRARY',
+      payload: {
+        forumId: _id,
+      },
+    })
   }, [_id, addToLibrary])
 
   return (
@@ -21,7 +25,7 @@ const LibraryItem = (props: IForum) => {
       {!inLibrary && (
         <div className="actions">
           <Button
-            loading={loading}
+            loading={isPending}
             size={'small'}
             icon={<PlusOutlined />}
             onClick={clickAction}

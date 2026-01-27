@@ -2,6 +2,8 @@ import { makeAutoObservable } from 'mobx'
 import RootStore from '@/store/RootStore'
 import apiService from '@/services/apiService'
 import { IBookMark } from '@/types/BookMark'
+import { IFile } from '@/types/File'
+import { IHistory } from '@/types/History'
 
 export default class PlayerStore {
   audioRef: HTMLAudioElement | null = null
@@ -23,6 +25,7 @@ export default class PlayerStore {
   }
 
   setFile = (id: string | undefined) => {
+    console.log('setFile', id)
     this.file = id
   }
 
@@ -47,15 +50,12 @@ export default class PlayerStore {
   setLoaded = (loaded: boolean) => {
     this.loaded = loaded
   }
-  changeBook = async (fileProps: { _id: string; name: string }) => {
-    const { playHistory } = this.api
-
-    this.loaded = false
+  changeBook = (params: { file: IFile; history: IHistory }) => {
+    const { file, history } = params || {}
     this.setStatus(false)
 
-    this.file = fileProps._id
-    this.setSelected(fileProps.name)
-    const { history } = (await playHistory({ fileId: fileProps._id })) || {}
+    this.file = file?._id
+    this.setSelected(file?.name)
     this.setTime(history?.time || 0)
     this.setLocalTime(history?.time || 0)
     this.play()
@@ -103,21 +103,5 @@ export default class PlayerStore {
     }
 
     el.blur()
-  }
-
-  addBookMark = async () => {
-    await this.api
-      .addBookMark({
-        fileId: this.file,
-        time: this.currentTime,
-      })
-      .then(this.loadBookMarks)
-  }
-
-  loadBookMarks = async () => {
-    const resp = await this.api.loadBookMarks({
-      fileId: this.file,
-    })
-    this.bookMarks = resp.bookMarks
   }
 }

@@ -2,25 +2,26 @@
 
 import { Flex, Input } from 'antd'
 import { LibraryStyled } from '@/entries/Library/styles'
-import { ChangeEvent, useCallback, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { observer } from 'mobx-react'
 import LibraryList from '@/entries/Library/LibraryList'
 import { useStore } from '@/store/root.context'
+import { useSearchBooksQuery } from '@/services/queries'
 
 const Library = (props: { className?: string }) => {
   const { libraryStore } = useStore()
-  const { searchTorrents } = libraryStore
   const [value, setValue] = useState('')
+  const { data } = useSearchBooksQuery(value)
 
-  const changeHandler = useCallback(
-    async (e: ChangeEvent<HTMLInputElement>) => {
-      const v = e.target.value
+  const changeHandler = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value
 
-      setValue(v)
-      await searchTorrents(v)
-    },
-    [searchTorrents],
-  )
+    setValue(v)
+  }, [])
+
+  useEffect(() => {
+    libraryStore.setItems(data?.collection)
+  }, [libraryStore, data?.collection])
 
   return (
     <LibraryStyled className={props?.className || ''}>

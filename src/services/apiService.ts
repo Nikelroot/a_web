@@ -97,13 +97,6 @@ class ApiService {
     return instance.post('/action/book', params).then(convertData)
   }
 
-  removeFromLibrary = async (params: {
-    action: TAction
-    payload: Record<string, string | number | boolean>
-  }) => {
-    return instance.post('/action/book', params).then(convertData)
-  }
-
   login = async (params: AuthData) => {
     return instance.post('/auth/login', params).then(convertData)
   }

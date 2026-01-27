@@ -4,6 +4,7 @@ import { timeConvert } from '@/utils/timeConverter'
 import { useStore } from '@/store/root.context'
 import { observer } from 'mobx-react'
 import { useMemo } from 'react'
+import { useBookMarkQuery } from '@/services/queries'
 
 interface Props {
   duration: number
@@ -14,17 +15,18 @@ interface Props {
 const SeekSlider = (props: Props) => {
   const { duration, currentTime, timeChangeHandler, timeChangeCompileHandler } = props
   const { playerStore } = useStore()
-  const { bookMarks } = playerStore
+  const { file } = playerStore
+  const { data } = useBookMarkQuery(file)
 
   const formatter: NonNullable<SliderSingleProps['tooltip']>['formatter'] = (value) => {
     return timeConvert(value)
   }
 
   const marks: SliderSingleProps['marks'] = useMemo(() => {
-    return bookMarks.reduce((acc, item, index) => {
+    return data?.bookMarks.reduce((acc, item, index) => {
       return { ...acc, [item.time]: index }
     }, {})
-  }, [bookMarks])
+  }, [data?.bookMarks])
 
   return (
     <div className="slider">

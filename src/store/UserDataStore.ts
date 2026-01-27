@@ -1,49 +1,16 @@
-import { makeAutoObservable, runInAction } from 'mobx'
-import apiService from '@/services/apiService'
+import { makeAutoObservable } from 'mobx'
 import RootStore from '@/store/RootStore'
 import { IForum } from '@/types/IForum'
 
 export default class UserDataStore {
   books: IForum[] = []
 
-  isLoading: boolean = false
-  removingIds = new Set<string>()
-
-  constructor(
-    private root: RootStore,
-    private api: typeof apiService,
-  ) {
+  constructor(private root: RootStore) {
     makeAutoObservable(this)
   }
 
-  loadBooks = async () => {
-    this.isLoading = true
-    try {
-      const data = await this.api.loadBooks()
-      runInAction(() => {
-        this.books = data?.collection
-      })
-    } finally {
-      runInAction(() => {
-        this.isLoading = false
-      })
-    }
-  }
-
-  removeBook = async (bookId: string) => {
-    if (this.removingIds.has(bookId)) return
-    this.removingIds.add(bookId)
-    try {
-      await this.api.removeFromLibrary({
-        action: 'REMOVE_TO_LIBRARY',
-        payload: { forumId: bookId },
-      })
-      await this.loadBooks()
-    } finally {
-      runInAction(() => {
-        this.removingIds.delete(bookId)
-      })
-    }
+  setBooks = (array) => {
+    this.books = array
   }
 
   get getActiveBook() {
@@ -54,10 +21,8 @@ export default class UserDataStore {
     )
   }
 
-  loadLastHistory = async () => {
-    const { getLastPlayedFile } = this.api
-
-    const { file, history } = await getLastPlayedFile()
+  setLastPlayed = (params) => {
+    const { file, history } = params
     this.root.playerStore.setFile(file._id)
     this.root.playerStore.setSelected(file.name)
     this.root.playerStore.setTime(history?.time || 0)

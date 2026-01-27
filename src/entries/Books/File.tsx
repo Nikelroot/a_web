@@ -4,13 +4,14 @@ import { IFile } from '@/types/File'
 
 const File = (props: IFile) => {
   const { playerStore } = useStore()
-  const { file, changeBook } = playerStore
+  const { file, setFile } = playerStore
 
   const lastPart = props.name.split('/')
   const title = lastPart.at(-1) ?? ''
 
   const clickHandler = () => {
-    changeBook(props)
+    // changeBook(props)
+    setFile(props._id)
   }
 
   return (

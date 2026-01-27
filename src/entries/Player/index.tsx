@@ -12,7 +12,7 @@ import {
   PlayCircleOutlined,
 } from '@ant-design/icons'
 import { timeConvert } from '@/utils/timeConverter'
-import { useThrottledUpdateTime } from '@/services/queries'
+import { useHistoryQuery, useThrottledUpdateTime, ussAddBookMarkMutation } from '@/services/queries'
 import Button from '@/shared/Button'
 import SeekSlider from '@/entries/Player/SeekLider'
 import { useStore } from '@/store/root.context'
@@ -40,11 +40,13 @@ const Player = () => {
 
     togglePlay,
     play,
-    addBookMark,
-    loadBookMarks,
+    file,
+    changeBook,
   } = playerStore
   const [isStandalone, setIsStandalone] = useState(false)
   const update = useThrottledUpdateTime(5000)
+  const { mutate: addBookMark } = ussAddBookMarkMutation()
+  const { data: playHistory } = useHistoryQuery(file)
 
   const timeUpdateHandler = useCallback(() => {
     const el = ref?.current
@@ -82,7 +84,7 @@ const Player = () => {
     async (e: number) => {
       const el = ref?.current
       if (!el) return
-      // eslint-disable-next-line react-hooks/immutability
+
       el.currentTime = e
       await play()
       timeUpdateHandler()
@@ -94,19 +96,20 @@ const Player = () => {
   const loadingHandler = useCallback(() => {
     setLoaded(true)
     durationChangeHandler()
-    loadBookMarks()
   }, [setLoaded, durationChangeHandler])
 
   const fastSeek = (time: number) => {
     const el = ref?.current
     if (!el) return
 
-    // eslint-disable-next-line react-hooks/immutability
     el.currentTime = el.currentTime + time
   }
 
   const addBookMarkHandler = () => {
-    addBookMark()
+    addBookMark({
+      fileId: file,
+      time: currentTime,
+    })
   }
 
   useEffect(() => {
@@ -125,6 +128,11 @@ const Player = () => {
   useEffect(() => {
     if (ref.current) setAudio(ref.current)
   }, [setAudio])
+
+  useEffect(() => {
+    if (!playHistory) return
+    changeBook(playHistory)
+  }, [changeBook, playHistory])
 
   if (ignorePathNames.includes(pathname)) return null
   return (

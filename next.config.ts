@@ -11,7 +11,7 @@ const nextConfig = (phase: string): NextConfig => {
       // },
     },
 
-    reactStrictMode: true,
+    reactStrictMode: false,
     env: {
       PUBLIC_API_URL: 'https://abook.nikelroot.ru',
     },

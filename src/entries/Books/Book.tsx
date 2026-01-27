@@ -6,14 +6,19 @@ import { Button } from 'antd'
 import { DeleteOutlined, ExportOutlined } from '@ant-design/icons'
 import { useStore } from '@/store/root.context'
 import { IForum } from '@/types/IForum'
+import { useRemoveBookMutation } from '@/services/queries'
 
 const Book = (props: IForum) => {
   const { files = [], _id } = props
   const { userStore } = useStore()
-  const { removeBook, getActiveBook, isLoading } = userStore
+  const { getActiveBook } = userStore
+  const { mutate: removeBook, isPending } = useRemoveBookMutation()
 
   const clickHandler = useCallback(() => {
-    removeBook(_id)
+    removeBook({
+      action: 'REMOVE_TO_LIBRARY',
+      payload: { forumId: _id },
+    })
   }, [_id, removeBook])
 
   return (
@@ -28,7 +33,7 @@ const Book = (props: IForum) => {
           variant={'solid'}
           color={'danger'}
           onClick={clickHandler}
-          loading={isLoading}
+          loading={isPending}
           icon={<DeleteOutlined />}
         />
       </div>

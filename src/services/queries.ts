@@ -9,6 +9,10 @@ import {
   addToLibrary,
   login,
   register,
+  loadBookMarks,
+  getLastPlayedFile,
+  addBookMark,
+  removeFromLibrary,
 } from './api'
 import { useEffect, useMemo } from 'react'
 import { throttle } from '@tanstack/pacer'
@@ -23,15 +27,30 @@ export const useBooksQuery = () =>
 
 export const useSearchBooksQuery = (search: string | null) =>
   useQuery({
-    queryKey: ['books', 'search', search],
+    queryKey: ['search', search],
     queryFn: () => searchBooks({ search }),
-    enabled: !!search,
+    // enabled: !!search,
   })
 
-export const useHistoryQuery = () =>
+export const useHistoryQuery = (fileId) =>
   useQuery({
-    queryKey: ['history'],
-    queryFn: getHistory,
+    queryKey: ['fileHistory', fileId],
+    queryFn: () => getHistory({ fileId }),
+    refetchOnWindowFocus: false,
+  })
+
+export const useLastPlayedFile = () =>
+  useQuery({
+    queryKey: ['lastPlayed'],
+    queryFn: getLastPlayedFile,
+    refetchOnWindowFocus: false,
+  })
+
+export const useBookMarkQuery = (fileId: string | undefined) =>
+  useQuery({
+    queryKey: ['bookMarks', fileId],
+    queryFn: () => loadBookMarks({ fileId }),
+    enabled: !!fileId,
   })
 
 /* ---------- mutations ---------- */
@@ -77,7 +96,18 @@ export const useAddToLibraryMutation = () => {
   return useMutation({
     mutationFn: addToLibrary,
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['books'] })
+      qc.invalidateQueries({ queryKey: ['search'] })
+    },
+  })
+}
+
+export const ussAddBookMarkMutation = () => {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: addBookMark,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['bookMarks'] })
     },
   })
 }
@@ -91,3 +121,14 @@ export const useRegisterMutation = () =>
   useMutation({
     mutationFn: register,
   })
+
+export const useRemoveBookMutation = () => {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: removeFromLibrary,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['books'] })
+    },
+  })
+}
