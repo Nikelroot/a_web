@@ -10,11 +10,8 @@ const nextConfig = (phase: string): NextConfig => {
       // exclude: ['error'],
       // },
     },
-    // turbopack: {
-    //   root: __dirname,
-    // },
 
-    reactStrictMode: false,
+    reactStrictMode: true,
     env: {
       PUBLIC_API_URL: 'https://abook.nikelroot.ru',
     },
